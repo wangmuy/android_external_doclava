@@ -154,6 +154,7 @@ public class Doclava {
     String debugStubsFile = "";
     HashSet<String> stubPackages = null;
     ArrayList<String> knownTagsFiles = new ArrayList<String>();
+    ArrayList<String> skipPackages = null;
 
     root = r;
 
@@ -234,6 +235,11 @@ public class Doclava {
         stubPackages = new HashSet<String>();
         for (String pkg : a[1].split(":")) {
           stubPackages.add(pkg);
+        }
+      } else if (a[0].equals("-skippackages")) {
+        skipPackages = new ArrayList<String>();
+        for (String pkg : a[1].split(":")) {
+          skipPackages.add(pkg);
         }
       } else if (a[0].equals("-sdkvalues")) {
         sdkValuePath = a[1];
@@ -392,7 +398,7 @@ public class Doclava {
 
     // Stubs
     if (stubsDir != null || apiFile != null || proguardFile != null || removedApiFile != null) {
-      Stubs.writeStubsAndApi(stubsDir, apiFile, proguardFile, removedApiFile, stubPackages);
+      Stubs.writeStubsAndApi(stubsDir, apiFile, proguardFile, removedApiFile, stubPackages, skipPackages);
     }
 
     Errors.printErrors();
@@ -614,6 +620,9 @@ public class Doclava {
       return 2;
     }
     if (option.equals("-stubpackages")) {
+      return 2;
+    }
+    if (option.equals("-skippackages")) {
       return 2;
     }
     if (option.equals("-sdkvalues")) {

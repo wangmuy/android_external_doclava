@@ -29,10 +29,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.lang.System;
 
 public class Stubs {
   public static void writeStubsAndApi(String stubsDir, String apiFile, String keepListFile,
-      String removedApiFile, HashSet<String> stubPackages) {
+      String removedApiFile, HashSet<String> stubPackages, ArrayList<String> skipPackages) {
     // figure out which classes we need
     final HashSet<ClassInfo> notStrippable = new HashSet<ClassInfo>();
     ClassInfo[] all = Converter.allClasses();
@@ -155,9 +156,13 @@ public class Stubs {
             if (packages.containsKey(cl.containingPackage())) {
               packages.get(cl.containingPackage()).add(cl);
             } else {
-              ArrayList<ClassInfo> classes = new ArrayList<ClassInfo>();
-              classes.add(cl);
-              packages.put(cl.containingPackage(), classes);
+              if(skipPackages != null && arrayStartsWith(skipPackages, cl.containingPackage().name())) {
+                System.out.println("skipping writeApi package "+cl.containingPackage().name());
+              } else {
+                ArrayList<ClassInfo> classes = new ArrayList<ClassInfo>();
+                classes.add(cl);
+                packages.put(cl.containingPackage(), classes);
+              }
             }
           }
         }
@@ -191,6 +196,17 @@ public class Stubs {
       writeRemovedApi(removedApiWriter, allPackageClassMap, notStrippable);
       removedApiWriter.close();
     }
+  }
+
+  static boolean arrayStartsWith(ArrayList<String> a, String s) {
+    boolean found = false;
+    for(String as : a) {
+      if(s.startsWith(as)) {
+        found = true;
+        break;
+      }
+    }
+    return found;
   }
 
   public static void cantStripThis(ClassInfo cl, HashSet<ClassInfo> notStrippable, String why) {
