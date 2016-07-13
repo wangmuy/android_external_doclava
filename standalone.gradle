@@ -1,0 +1,32 @@
+apply plugin: 'java'
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/']
+        }
+        resources {
+            srcDirs = ['res/']
+        }
+    }
+}
+// TODO put this function in a plugin
+String findToolsJar() {
+    new ByteArrayOutputStream().withStream { os ->
+        project.exec {
+            executable "$rootDir/libs/find-jdk-tools-jar.sh"
+
+            standardOutput = os
+        }
+        return os.toString().trim()
+    }
+}
+
+dependencies {
+    compile files(findToolsJar())
+    compile files(
+        'libs/antlr-runtime.jar',
+        'libs/jsilver.jar',
+        'libs/tagsouplib.jar'
+    )
+}
