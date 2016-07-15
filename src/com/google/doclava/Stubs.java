@@ -33,7 +33,7 @@ import java.lang.System;
 
 public class Stubs {
   public static void writeStubsAndApi(String stubsDir, String apiFile, String keepListFile,
-      String removedApiFile, HashSet<String> stubPackages, ArrayList<String> skipPackages) {
+      String removedApiFile, HashSet<String> stubPackages, ArrayList<String> skipPackages, ArrayList<String> keepOnlyPackages) {
     // figure out which classes we need
     final HashSet<ClassInfo> notStrippable = new HashSet<ClassInfo>();
     ClassInfo[] all = Converter.allClasses();
@@ -156,7 +156,14 @@ public class Stubs {
             if (packages.containsKey(cl.containingPackage())) {
               packages.get(cl.containingPackage()).add(cl);
             } else {
+              boolean willWrite = true;
               if(skipPackages != null && arrayStartsWith(skipPackages, cl.containingPackage().name())) {
+                willWrite = false;
+              }
+              if(keepOnlyPackages != null && arrayStartsWith(keepOnlyPackages, cl.containingPackage().name())) {
+                willWrite = false;
+              }
+              if(willWrite == false) {
                 System.out.println("skipping writeApi package "+cl.containingPackage().name());
               } else {
                 ArrayList<ClassInfo> classes = new ArrayList<ClassInfo>();
