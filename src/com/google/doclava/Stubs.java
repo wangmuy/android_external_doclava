@@ -160,7 +160,7 @@ public class Stubs {
               if(skipPackages != null && arrayStartsWith(skipPackages, cl.containingPackage().name())) {
                 willWrite = false;
               }
-              if(keepOnlyPackages != null && arrayStartsWith(keepOnlyPackages, cl.containingPackage().name())) {
+              if(keepOnlyPackages != null && !arrayStartsWith(keepOnlyPackages, cl.containingPackage().name())) {
                 willWrite = false;
               }
               if(willWrite == false) {
