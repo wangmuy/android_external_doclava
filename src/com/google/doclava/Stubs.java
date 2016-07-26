@@ -146,7 +146,7 @@ public class Stubs {
     HashMap<PackageInfo, List<ClassInfo>> packages = new HashMap<PackageInfo, List<ClassInfo>>();
     for (ClassInfo cl : notStrippable) {
       if (!cl.isDocOnly()) {
-        if (stubPackages == null || stubPackages.contains(cl.containingPackage().name())) {
+        if (stubPackages == null || collectionStartsWith(stubPackages, cl.containingPackage().name())) {
           // write out the stubs
           if (stubsDir != null) {
             writeClassFile(stubsDir, notStrippable, cl);
@@ -157,10 +157,10 @@ public class Stubs {
               packages.get(cl.containingPackage()).add(cl);
             } else {
               boolean willWrite = true;
-              if(skipPackages != null && arrayStartsWith(skipPackages, cl.containingPackage().name())) {
+              if(skipPackages != null && collectionStartsWith(skipPackages, cl.containingPackage().name())) {
                 willWrite = false;
               }
-              if(keepOnlyPackages != null && !arrayStartsWith(keepOnlyPackages, cl.containingPackage().name())) {
+              if(keepOnlyPackages != null && !collectionStartsWith(keepOnlyPackages, cl.containingPackage().name())) {
                 willWrite = false;
               }
               if(willWrite == false) {
@@ -205,9 +205,9 @@ public class Stubs {
     }
   }
 
-  static boolean arrayStartsWith(ArrayList<String> a, String s) {
+  static boolean collectionStartsWith(Collection<String> c, String s) {
     boolean found = false;
-    for(String as : a) {
+    for(String as : c) {
       if(s.startsWith(as)) {
         found = true;
         break;
