@@ -10,21 +10,44 @@ sourceSets {
         }
     }
 }
-// TODO put this function in a plugin
-String findToolsJar() {
+
+String findToolsJarWindows() {
+    try {
+        def toolsFile = file(JAVA_TOOLSJAR_PATH)
+    } catch(e) {
+        throw new InvalidUserDataException("define JAVA_TOOLSJAR_PATH in gradle.properties")
+    }
+    return JAVA_TOOLSJAR_PATH
+}
+
+String findToolsJarLinux() {
     new ByteArrayOutputStream().withStream { os ->
         project.exec {
-            executable "$rootDir/build/core/find-jdk-tools-jar.sh"
-
+            executable = "$rootDir/build/core/find-jdk-tools-jar.sh"
             standardOutput = os
         }
         return os.toString().trim()
     }
 }
 
+String findToolsJar() {
+    if(System.properties['os.name'].toLowerCase(Locale.ROOT).contains('windows'))
+        return findToolsJarWindows()
+    else
+        return findToolsJarLinux()
+}
+
 dependencies {
     compile files(findToolsJar())
-    compile project(path: ':antlr', configuration: 'antlrRuntime')
-    compile project(':jsilver')
-    compile project(':tagsoup')
+    if(System.properties['os.name'].toLowerCase(Locale.ROOT).contains('windows')) {
+        compile files(
+                'libs/antlr-runtime.jar',
+                'libs/jsilver.jar',
+                'libs/tagsouplib.jar'
+        )
+    } else {
+        compile project(path: ':antlr', configuration: 'antlrRuntime')
+        compile project(':jsilver')
+        compile project(':tagsoup')
+    }
 }

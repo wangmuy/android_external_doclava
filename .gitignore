@@ -1,3 +1,6 @@
 bin/
 .gradle/
+.idea/
 build/
+gradle.properties
+local.properties
